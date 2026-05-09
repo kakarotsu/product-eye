@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>图标生成器 - 商品识价</title>
+<style>
+  body { font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; text-align: center; }
+  h1 { font-size: 24px; }
+  button { font-size: 20px; padding: 16px 32px; background: #1565C0; color: #fff; border: none; border-radius: 12px; cursor: pointer; margin-top: 16px; }
+  button:active { background: #0D47A1; }
+  canvas { display: none; }
+  .preview { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 24px; }
+  .preview img { border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .info { font-size: 16px; color: #666; margin-top: 16px; }
+  .done { color: #2E7D32; font-weight: 700; }
+</style>
+</head>
+<body>
+  <h1>商品识价 · 图标生成器</h1>
+  <p class="info">点击下方按钮自动生成 8 个尺寸的 PNG 图标并下载</p>
+  <button onclick="generateAll()">生成全部图标</button>
+  <div class="preview" id="preview"></div>
+  <p class="info done" id="status"></p>
+
+  <script>
+    const SIZES = [72, 96, 128, 144, 152, 192, 384, 512];
+
+    function drawIcon(size) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const cx = size / 2;
+      const cy = size / 2;
+      const r = size * 0.46;
+
+      // Background circle
+      ctx.fillStyle = '#1565C0';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // White eye/magnifier icon
+      const s = size * 0.22;
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.lineWidth = size * 0.07;
+      ctx.lineCap = 'round';
+
+      // Outer circle (magnifier ring)
+      const ringCx = cx - s * 0.3;
+      const ringCy = cy - s * 0.3;
+      const ringR = s * 1.1;
+      ctx.beginPath();
+      ctx.arc(ringCx, ringCy, ringR, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Handle
+      ctx.beginPath();
+      ctx.moveTo(ringCx + ringR * 0.7, ringCy + ringR * 0.7);
+      ctx.lineTo(ringCx + ringR * 1.6, ringCy + ringR * 1.6);
+      ctx.stroke();
+
+      // Pupil dot
+      const dotR = size * 0.09;
+      ctx.beginPath();
+      ctx.arc(ringCx + ringR * 0.25, ringCy - ringR * 0.1, dotR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ¥ symbol
+      ctx.font = `700 ${size * 0.24}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('¥', cx + r * 0.55, cy + r * 0.45);
+
+      return canvas;
+    }
+
+    function generateAll() {
+      document.getElementById('preview').innerHTML = '';
+      document.getElementById('status').textContent = '正在生成...';
+
+      SIZES.forEach((size, i) => {
+        setTimeout(() => {
+          const canvas = drawIcon(size);
+          const url = canvas.toDataURL('image/png');
+
+          // Preview
+          const img = document.createElement('img');
+          img.src = url;
+          img.width = Math.min(size, 96);
+          img.height = Math.min(size, 96);
+          img.title = `${size}x${size}`;
+          document.getElementById('preview').appendChild(img);
+
+          // Download
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `icon-${size}.png`;
+          a.click();
+
+          if (i === SIZES.length - 1) {
+            setTimeout(() => {
+              document.getElementById('status').innerHTML =
+                '✅ 全部 8 个图标已下载！<br><br>请将下载的图标文件放入<br><code>product-eye/assets/icons/</code> 目录';
+            }, 500);
+          }
+        }, i * 300);
+      });
+    }
+  </script>
+</body>
+</html>
