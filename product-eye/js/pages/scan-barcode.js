@@ -40,7 +40,7 @@ export async function render(app) {
   `;
 
   document.getElementById('btn-close-scan').addEventListener('click', () => {
-    abortCtrl.abort();
+    if (abortCtrl) abortCtrl.abort();
     stopCam(stream);
     if (returnTo) {
       const qs = returnId ? `?id=${returnId}` : '';
@@ -50,25 +50,28 @@ export async function render(app) {
     }
   });
 
+  abortCtrl = new AbortController();
   await initScan();
 }
 
 async function initScan() {
   const video = document.getElementById('scanner-video');
-  abortCtrl = new AbortController();
+  const statusEl = document.getElementById('scan-status');
 
   try {
     stream = await startCam(video, 'environment');
-    document.getElementById('scan-status').textContent = '📷 将条码放入框内自动识别';
+    statusEl.textContent = '📷 将条码放入框内自动识别';
 
-    const barcode = await scan(video, abortCtrl.signal);
+    const barcode = await scan(video, abortCtrl.signal, (msg) => {
+      statusEl.textContent = msg;
+    });
 
     if (barcode) {
       stopCam(stream);
       showResult(barcode);
     }
   } catch (err) {
-    document.getElementById('scan-status').textContent = '⚠️ 相机启动失败：' + err.message;
+    statusEl.textContent = '⚠️ ' + err.message;
   }
 }
 
