@@ -4,8 +4,9 @@ export function render(app) {
   app.innerHTML = `
     <div class="page active">
       <div class="page-content">
-        <h1 class="page-title" style="text-align:center;padding-top:24px;">商品识价</h1>
-        <div class="home-grid">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:24px;">
+          <h1 class="page-title" style="text-align:center;">商品识价</h1>
+          <div class="home-grid">
           <button class="home-card" id="btn-scan">
             <span class="card-icon">📷</span>
             <span class="card-label">扫描条码</span>
@@ -22,6 +23,7 @@ export function render(app) {
             <span class="card-icon">⚙️</span>
             <span class="card-label">设置</span>
           </button>
+        </div>
         </div>
       </div>
     </div>
