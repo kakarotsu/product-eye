@@ -1,5 +1,5 @@
-const CACHE_NAME = 'product-eye-v1';
-const CDN_CACHE = 'product-eye-cdn-v1';
+const CACHE_NAME = 'product-eye-v2';
+const CDN_CACHE = 'product-eye-cdn-v2';
 
 const APP_FILES = [
   './',
@@ -18,11 +18,13 @@ const APP_FILES = [
   'js/pages/product-list.js',
   'js/pages/result.js',
   'js/pages/scan-barcode.js',
+  'js/pages/settings.js',
   'js/services/barcode-service.js',
   'js/services/camera-service.js',
   'js/services/recognition-service.js',
   'js/services/tts-service.js',
-  'js/utils/image-utils.js'
+  'js/utils/image-utils.js',
+  'js/utils/storage-utils.js'
 ];
 
 const CDN_HOSTS = ['cdn.jsdelivr.net', 'cdnjs.cloudflare.com'];

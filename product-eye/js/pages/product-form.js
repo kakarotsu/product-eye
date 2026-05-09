@@ -84,6 +84,8 @@ export function render(app) {
       alert('图片处理失败：' + err.message);
     }
   });
+
+  renderPhotos();
 }
 
 function renderPhotos() {

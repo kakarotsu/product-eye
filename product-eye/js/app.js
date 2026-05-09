@@ -6,6 +6,7 @@ import { render as renderProductForm } from './pages/product-form.js';
 import { render as renderScanBarcode } from './pages/scan-barcode.js';
 import { render as renderIdentifyPhoto } from './pages/identify-photo.js';
 import { render as renderResult } from './pages/result.js';
+import { render as renderSettings } from './pages/settings.js';
 
 async function boot() {
   try {
@@ -27,8 +28,7 @@ async function boot() {
     register('#scan', renderScanBarcode);
     register('#identify', renderIdentifyPhoto);
     register('#result', renderResult);
-    // Other routes will be added in later phases:
-    // register('#settings', ...)
+    register('#settings', renderSettings);
 
     startRouter();
 
