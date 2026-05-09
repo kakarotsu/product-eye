@@ -253,6 +253,34 @@ body {
   outline: none;
 }
 
+.input-row {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.input-row .form-input {
+  flex: 1;
+}
+
+.btn-scan-barcode {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: var(--color-secondary-bg);
+  border: 2px solid var(--color-divider);
+  border-radius: var(--radius);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-scan-barcode:active {
+  background: var(--color-divider);
+}
+
 /* ===== 商品列表 ===== */
 .product-list {
   flex: 1;

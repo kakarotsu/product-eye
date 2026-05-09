@@ -1,12 +1,21 @@
-import { navigate } from '../router.js';
+import { navigate, getParams } from '../router.js';
 import { start as startCam, stop as stopCam } from '../services/camera-service.js';
 import { scan, isNativeSupported } from '../services/barcode-service.js';
 import { getProductByBarcode } from '../db.js';
 
 let stream = null;
 let abortCtrl = null;
+let returnTo = null;
+let returnId = null;
+
+function parseReturnTo() {
+  const params = getParams();
+  returnTo = params.returnTo || null;
+  returnId = params.returnId || null;
+}
 
 export async function render(app) {
+  parseReturnTo();
   app.innerHTML = `
     <div class="page active">
       <div class="scan-container">
@@ -33,7 +42,12 @@ export async function render(app) {
   document.getElementById('btn-close-scan').addEventListener('click', () => {
     abortCtrl.abort();
     stopCam(stream);
-    navigate('#home');
+    if (returnTo) {
+      const qs = returnId ? `?id=${returnId}` : '';
+      navigate(`#${returnTo}${qs}`);
+    } else {
+      navigate('#home');
+    }
   });
 
   await initScan();
@@ -73,9 +87,17 @@ async function showResult(barcode) {
 
   if (product) {
     stopCam(stream);
-    navigate(`#result?id=${product.id}&barcode=${barcode}&method=barcode&confidence=1`);
+    if (returnTo) {
+      const idParam = returnId ? `&id=${returnId}` : '';
+      navigate(`#${returnTo}?barcode=${barcode}${idParam}`);
+    } else {
+      navigate(`#result?id=${product.id}&barcode=${barcode}&method=barcode&confidence=1`);
+    }
     return;
   }
+
+  const addTarget = returnTo || 'add-product';
+  const addParams = returnTo && returnId ? `?barcode=${barcode}&id=${returnId}` : `?barcode=${barcode}`;
 
   resultEl.style.display = 'block';
   resultEl.innerHTML = `
@@ -94,6 +116,6 @@ async function showResult(barcode) {
   });
 
   document.getElementById('btn-add-with-barcode').addEventListener('click', () => {
-    navigate(`#add-product?barcode=${barcode}`);
+    navigate(`#${addTarget}${addParams}`);
   });
 }

@@ -30,7 +30,10 @@ export function render(app) {
         </div>
         <div class="form-group">
           <label class="form-label">条码（可选）</label>
-          <input class="form-input" id="input-barcode" type="text" placeholder="扫描或手动输入" autocomplete="off">
+          <div class="input-row">
+            <input class="form-input" id="input-barcode" type="text" placeholder="扫描或手动输入" autocomplete="off">
+            <button class="btn-scan-barcode" id="btn-scan-barcode">📷</button>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">参考图片（最多5张）</label>
@@ -50,11 +53,40 @@ export function render(app) {
   if (isEdit) {
     loadProduct(editingId);
     document.getElementById('btn-delete').addEventListener('click', onDelete);
-  } else if (params.barcode) {
+  }
+  if (params.barcode) {
     document.getElementById('input-barcode').value = params.barcode;
   }
 
   document.getElementById('btn-save').addEventListener('click', onSave);
+
+  document.getElementById('btn-scan-barcode').addEventListener('click', () => {
+    const draft = {
+      name: document.getElementById('input-name').value,
+      price: document.getElementById('input-price').value,
+      barcode: document.getElementById('input-barcode').value,
+      photos: photos.map((p) => ({ id: p.id, blob: p.blob, dataUrl: p.dataUrl })),
+      editingId
+    };
+    sessionStorage.setItem('formDraft', JSON.stringify(draft));
+    const returnTo = editingId ? 'edit-product' : 'add-product';
+    const returnId = editingId ? `&returnId=${editingId}` : '';
+    navigate(`#scan?returnTo=${returnTo}${returnId}`);
+  });
+
+  const draftJson = sessionStorage.getItem('formDraft');
+  if (draftJson) {
+    try {
+      const draft = JSON.parse(draftJson);
+      if (!editingId && draft.name) document.getElementById('input-name').value = draft.name;
+      if (!editingId && draft.price) document.getElementById('input-price').value = draft.price;
+      if (draft.photos) {
+        photos = draft.photos;
+        renderPhotos();
+      }
+    } catch (_) {}
+    sessionStorage.removeItem('formDraft');
+  }
 
   const photoInput = document.getElementById('photo-input');
   document.getElementById('photos-area').addEventListener('click', (e) => {
